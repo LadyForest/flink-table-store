@@ -19,7 +19,10 @@
 package org.apache.flink.table.store.connector;
 
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.core.fs.Path;
+import org.apache.flink.core.plugin.PluginUtils;
+import org.apache.flink.table.api.TableConfig;
 import org.apache.flink.table.catalog.ResolvedCatalogTable;
 import org.apache.flink.table.connector.sink.DynamicTableSink;
 import org.apache.flink.table.connector.source.DynamicTableSource;
@@ -89,6 +92,9 @@ public class TableStoreConnectorFactory extends AbstractTableStoreFactory {
     }
 
     private void createTableIfNeeded(Context context) {
+        Configuration configuration = ((TableConfig) context.getConfiguration()).getConfiguration();
+        FileSystem.initialize(
+                configuration, PluginUtils.createPluginManagerFromRootFolder(configuration));
         ResolvedCatalogTable table = context.getCatalogTable();
         Configuration options = Configuration.fromMap(table.getOptions());
         if (options.get(AUTO_CREATE)) {

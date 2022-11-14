@@ -21,6 +21,9 @@ package org.apache.flink.table.store.connector;
 import org.apache.flink.configuration.ConfigOption;
 import org.apache.flink.configuration.ConfigOptions;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.core.fs.FileSystem;
+import org.apache.flink.core.plugin.PluginUtils;
+import org.apache.flink.table.api.TableConfig;
 import org.apache.flink.table.store.file.catalog.Catalog;
 import org.apache.flink.table.store.file.catalog.CatalogFactory;
 
@@ -54,6 +57,9 @@ public class FlinkCatalogFactory implements org.apache.flink.table.factories.Cat
 
     @Override
     public FlinkCatalog createCatalog(Context context) {
+        Configuration configuration = ((TableConfig) context.getConfiguration()).getConfiguration();
+        FileSystem.initialize(
+                configuration, PluginUtils.createPluginManagerFromRootFolder(configuration));
         return createCatalog(context.getName(), Configuration.fromMap(context.getOptions()));
     }
 
